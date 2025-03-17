@@ -1,1 +1,18 @@
+import pandas as pd
+from glob import glob
 
+configfile: 'config/config.yaml'
+
+include: 'rules/bwa.smk'
+include: 'rules/samtools.smk'
+include: 'rules/alfred.smk'
+include: 'rules/plot_map_quality.smk'
+include: 'rules/flagstat.smk'
+include: 'rules/plot_flagstat.smk'
+
+df=pd.read_table(config['samples'], dtype={'sample': str, 'sample_id':str})
+
+rule all:
+	input:
+              	expand(config['output'] + '/qc/plots/mapqc/{sample}.map_qc.pdf', sample=df['sample_id']),
+                expand(config['output'] + '/qc/plots/flagstats/{sample}.stats.pdf', sample=df['sample_id'])
